@@ -4,7 +4,7 @@ module WebApi
   module V1
     class SubscriptionsController < WebApi::BaseController
       def from_android_provider
-        with_action(Subscriptions::FromAndroidProvider) { |data| render json: data, status: :created }
+        with_action(Subscriptions::AndroidProviderAction) { |data| render json: data, status: :created }
       end
 
       private
