@@ -1,12 +1,12 @@
 module WebApi
   module V1
     module Subscriptions
-      class AndroidProviderAction < BaseAction
+      class CreateAction < BaseAction
         Contract = Dry::Validation::Contract.build do
           params do
-            required(:provider)
-            required(:user).filled(Types.Instance(User))
-            optional(:session).filled(Types.Instance(Session))
+            required(:type).filled(Types::String)
+            required(:google_subscription_id).filled(Types::String)
+            required(:purchase_token).filled(:Types::String)
           end
         end
 
@@ -14,12 +14,16 @@ module WebApi
 
         def call
           invoice = yield process_invoice
-          yield process_subscription(invoice)
+          subscription = yield process_subscription(invoice)
 
-          Success(invoice_id: invoice.id, payment_widget: payment_widget)
+          Success(subscription)
         end
 
         private
+
+        def provider
+          @provider ||= Subscriptions::FetchAndroidProvider.call(validated_params).to_result
+        end
 
         def process_subscription(invoice)
           Maybe { invoice&.subscription }.or do
@@ -38,7 +42,7 @@ module WebApi
         end
 
         def create_subscription
-          ::Subscriptions::CreateFromProvider.call(provider)
+          ::Subscriptions::CreateFromAndroidProvider.call(provider)
         end
 
         def bind_subscription_for_invoice(invoice, subscription)

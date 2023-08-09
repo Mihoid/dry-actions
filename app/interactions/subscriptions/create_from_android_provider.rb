@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Subscriptions
-  class CreateFromProvider < BaseOperation
+  class CreateFromAndroidProvider < BaseInteractor
     option :provider, reader: :private
     delegate :purchase_token, :active?, :end_date, :canceled_at, :transaction_id, to: :provider
 
