@@ -20,8 +20,8 @@ module Subscriptions
       }
     end
 
-    def perform
-      Subscription.create!(attrs)
+    def perform #————>>>> before_save
+      Subscription.create!(attrs.merge(price_currency: 'RUB'))
     end
   end
 end
